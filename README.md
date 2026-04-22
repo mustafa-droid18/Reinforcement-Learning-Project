@@ -44,4 +44,3 @@ python -m mario_rl.train --config configs/llm_v1_template.json
 This starter intentionally does not call an LLM yet. It gives you the fixed
 training/evaluation pipeline first, because that is the part you need before
 an LLM-generated reward function is meaningful.
-

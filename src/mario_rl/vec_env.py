@@ -14,10 +14,11 @@ def build_vec_env(
 ):
     reward_fn = load_reward_function(reward_path)
 
-    def make_env():
-        return build_env(config, reward_fn=reward_fn, render_mode=render_mode)
-
-    env = DummyVecEnv([make_env])
+    env_fns = [
+        (lambda reward_fn=reward_fn, render_mode=render_mode: build_env(config, reward_fn=reward_fn, render_mode=render_mode))
+        for _ in range(config.n_envs)
+    ]
+    env = DummyVecEnv(env_fns)
     env = VecMonitor(env)
     env = VecTransposeImage(env)
 

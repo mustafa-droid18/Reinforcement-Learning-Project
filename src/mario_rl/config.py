@@ -32,6 +32,9 @@ class ExperimentConfig:
     frame_stack: int = 4
     grayscale: bool = True
     resize_shape: list[int] = field(default_factory=lambda: [84, 84])
+    n_envs: int = 1
+    frame_skip: int = 1
+    max_stagnation_steps: int = 0
     train_reward_path: str | None = None
     log_dir: str = "artifacts"
     record_videos: bool = False

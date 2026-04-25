@@ -19,6 +19,69 @@ ACTION_SETS = {
 }
 
 
+class FrameSkipWrapper(gym.Wrapper):
+    """Repeat each action for `skip` game frames and sum the rewards.
+
+    Placed before observation wrappers so that only the final frame's
+    observation is returned, matching standard Mario/Atari practice.
+    Each agent step now covers ~67ms of game time (4 × 1/60s) instead
+    of ~17ms, making jump button-holds learnable from a single action.
+    """
+
+    def __init__(self, env: gym.Env, skip: int = 4):
+        super().__init__(env)
+        self._skip = skip
+
+    def step(self, action):
+        total_reward = 0.0
+        for _ in range(self._skip):
+            obs, reward, terminated, truncated, info = self.env.step(action)
+            total_reward += float(reward)
+            if terminated or truncated:
+                break
+        return obs, total_reward, terminated, truncated, info
+
+
+class StagnationTerminationWrapper(gym.Wrapper):
+    """Truncate episodes that stop making horizontal progress."""
+
+    def __init__(self, env: gym.Env, max_stagnation_steps: int):
+        super().__init__(env)
+        self.max_stagnation_steps = max_stagnation_steps
+        self.best_x = 0.0
+        self.stagnation_steps = 0
+
+    def reset(self, **kwargs):
+        result = self.env.reset(**kwargs)
+        info = result[1] if isinstance(result, tuple) and len(result) == 2 else {}
+        self.best_x = float(info.get("x_pos", 0.0))
+        self.stagnation_steps = 0
+        return result
+
+    def step(self, action):
+        obs, reward, terminated, truncated, info = self.env.step(action)
+
+        curr_x = float(info.get("x_pos", self.best_x))
+        if curr_x > self.best_x + 1.0:
+            self.best_x = curr_x
+            self.stagnation_steps = 0
+        else:
+            self.stagnation_steps += 1
+
+        if (
+            not terminated
+            and not truncated
+            and self.max_stagnation_steps > 0
+            and self.stagnation_steps >= self.max_stagnation_steps
+        ):
+            truncated = True
+            info = dict(info)
+            info["stagnation_truncated"] = True
+            info["stagnation_steps"] = self.stagnation_steps
+
+        return obs, reward, terminated, truncated, info
+
+
 class RewardShapingWrapper(gym.Wrapper):
     def __init__(self, env: gym.Env, reward_fn: RewardFn):
         super().__init__(env)
@@ -110,6 +173,13 @@ def build_env(
     )
     env = JoypadSpace(env, ACTION_SETS[config.action_set])
     env = GymApiCompatibilityWrapper(env)
+
+    if config.frame_skip > 1:
+        env = FrameSkipWrapper(env, skip=config.frame_skip)
+
+    if config.max_stagnation_steps > 0:
+        env = StagnationTerminationWrapper(env, max_stagnation_steps=config.max_stagnation_steps)
+
     env = RecordEpisodeStatistics(env)
     env = _apply_observation_wrappers(env, config)
 

@@ -37,11 +37,13 @@ def record_policy_video(
     fps: int,
 ) -> dict:
     import imageio.v2 as imageio
+    from dataclasses import replace
 
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    env = build_vec_env(config, reward_path=None, render_mode="rgb_array")
+    # Always record a single environment regardless of training n_envs setting
+    env = build_vec_env(replace(config, n_envs=1), reward_path=None, render_mode="rgb_array")
     obs = env.reset()
 
     total_reward = 0.0

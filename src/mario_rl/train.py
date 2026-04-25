@@ -19,6 +19,10 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def _callback_freq(target_timesteps: int, n_envs: int) -> int:
+    return max(target_timesteps // max(n_envs, 1), 1)
+
+
 def main() -> None:
     args = parse_args()
     config = ExperimentConfig.from_json(args.config)
@@ -47,7 +51,7 @@ def main() -> None:
             eval_env=eval_env,
             best_model_save_path=str(model_dir),
             log_path=str(eval_dir),
-            eval_freq=config.eval_freq,
+            eval_freq=_callback_freq(config.eval_freq, config.n_envs),
             n_eval_episodes=config.n_eval_episodes,
             deterministic=True,
             render=False,
@@ -59,7 +63,7 @@ def main() -> None:
             VideoRecorderCallback(
                 config=config,
                 video_dir=video_dir,
-                record_freq=config.video_freq or config.eval_freq,
+                record_freq=_callback_freq(config.video_freq or config.eval_freq, config.n_envs),
                 max_steps=config.video_length,
                 fps=config.video_fps,
             )

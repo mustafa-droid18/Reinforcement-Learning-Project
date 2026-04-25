@@ -1,5 +1,5 @@
 {
-  "experiment_name": "baseline_seed0",
+  "experiment_name": "human_heuristic_seed0",
   "env_id": "SuperMarioBros-1-1-v0",
   "action_set": "SIMPLE_MOVEMENT",
   "total_timesteps": 300000,
@@ -12,7 +12,7 @@
     84,
     84
   ],
-  "train_reward_path": "reward_functions/default_reward.py",
+  "train_reward_path": "reward_functions/human_heuristic.py",
   "log_dir": "artifacts",
   "record_videos": false,
   "video_freq": 25000,

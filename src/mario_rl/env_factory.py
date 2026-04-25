@@ -4,7 +4,7 @@ from typing import Callable
 
 import gym
 import gym_super_mario_bros
-from gym.wrappers import FrameStack, GrayScaleObservation, RecordEpisodeStatistics, ResizeObservation
+from gym.wrappers import GrayScaleObservation, RecordEpisodeStatistics, ResizeObservation
 from gym_super_mario_bros.actions import COMPLEX_MOVEMENT, RIGHT_ONLY, SIMPLE_MOVEMENT
 from nes_py.wrappers import JoypadSpace
 
@@ -64,22 +64,52 @@ class RewardShapingWrapper(gym.Wrapper):
         return obs, validate_reward_output(reward), done, info
 
 
+class GymApiCompatibilityWrapper(gym.Wrapper):
+    def reset(self, **kwargs):
+        seed = kwargs.pop("seed", None)
+        kwargs.pop("options", None)
+
+        if seed is not None and hasattr(self.env, "seed"):
+            self.env.seed(seed)
+
+        result = self.env.reset(**kwargs)
+        if isinstance(result, tuple) and len(result) == 2:
+            return result
+        return result, {}
+
+    def step(self, action):
+        result = self.env.step(action)
+        if len(result) == 5:
+            return result
+
+        obs, reward, done, info = result
+        return obs, reward, bool(done), False, info
+
+
 def _apply_observation_wrappers(env: gym.Env, config: ExperimentConfig) -> gym.Env:
     if config.resize_shape:
         env = ResizeObservation(env, shape=tuple(config.resize_shape))
     if config.grayscale:
         env = GrayScaleObservation(env, keep_dim=True)
-    if config.frame_stack > 1:
-        env = FrameStack(env, num_stack=config.frame_stack)
     return env
 
 
-def build_env(config: ExperimentConfig, reward_fn: Callable[..., float] | None = None) -> gym.Env:
+def build_env(
+    config: ExperimentConfig,
+    reward_fn: Callable[..., float] | None = None,
+    render_mode: str | None = None,
+) -> gym.Env:
     if config.action_set not in ACTION_SETS:
         raise ValueError(f"Unsupported action set: {config.action_set}")
 
-    env = gym_super_mario_bros.make(config.env_id)
+    env = gym_super_mario_bros.make(
+        config.env_id,
+        apply_api_compatibility=True,
+        disable_env_checker=True,
+        render_mode=render_mode,
+    )
     env = JoypadSpace(env, ACTION_SETS[config.action_set])
+    env = GymApiCompatibilityWrapper(env)
     env = RecordEpisodeStatistics(env)
     env = _apply_observation_wrappers(env, config)
 
@@ -87,4 +117,3 @@ def build_env(config: ExperimentConfig, reward_fn: Callable[..., float] | None =
         env = RewardShapingWrapper(env, reward_fn)
 
     return env
-

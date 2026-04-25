@@ -12,8 +12,14 @@
     84,
     84
   ],
-  "train_reward_path": "reward_functions/forward_progress.py",
+  "train_reward_path": "reward_functions/llm_v1.py",
   "log_dir": "artifacts",
+  "record_videos": false,
+  "video_freq": 25000,
+  "video_length": 10000,
+  "video_fps": 30,
+  "video_format": "mp4",
+  "device": "auto",
   "ppo": {
     "policy": "CnnPolicy",
     "learning_rate": 0.00025,
@@ -28,4 +34,3 @@
     "max_grad_norm": 0.5
   }
 }
-

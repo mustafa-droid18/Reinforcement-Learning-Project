@@ -7,43 +7,27 @@ from pathlib import Path
 from stable_baselines3 import PPO
 
 from mario_rl.config import ExperimentConfig
-from mario_rl.env_factory import build_env
+from mario_rl.vec_env import build_vec_env
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Evaluate a trained PPO Mario agent.")
     parser.add_argument("--config", required=True, help="Path to the experiment JSON config.")
     parser.add_argument("--model", required=True, help="Path to the saved model zip file.")
     parser.add_argument("--episodes", type=int, default=5, help="Number of evaluation episodes.")
+    parser.add_argument("--output", help="Optional path for the JSON evaluation summary.")
     return parser.parse_args()
-
-
-def reset_env(env):
-    result = env.reset()
-    if isinstance(result, tuple) and len(result) == 2:
-        obs, _info = result
-        return obs
-    return result
-
-
-def step_env(env, action):
-    result = env.step(action)
-    if len(result) == 5:
-        obs, reward, terminated, truncated, info = result
-        done = bool(terminated or truncated)
-        return obs, reward, done, info
-
-    obs, reward, done, info = result
-    return obs, reward, bool(done), info
 
 
 def main() -> None:
     args = parse_args()
     config = ExperimentConfig.from_json(args.config)
-    env = build_env(config, reward_fn=None)
+    env = build_vec_env(config, reward_path=None)
     model = PPO.load(args.model)
 
     episodes = []
     for episode_idx in range(args.episodes):
-        obs = reset_env(env)
+        obs = env.reset()
         done = False
         total_reward = 0.0
         final_info = {}
@@ -51,9 +35,10 @@ def main() -> None:
 
         while not done:
             action, _state = model.predict(obs, deterministic=True)
-            obs, reward, done, info = step_env(env, action)
-            total_reward += float(reward)
-            final_info = info
+            obs, rewards, dones, infos = env.step(action)
+            total_reward += float(rewards[0])
+            final_info = infos[0]
+            done = bool(dones[0])
             step_count += 1
 
         episodes.append(
@@ -77,7 +62,8 @@ def main() -> None:
         "completion_rate": sum(1 for row in episodes if row["flag_get"]) / len(episodes),
     }
 
-    output_path = Path(config.log_dir) / config.experiment_name / "evaluation_summary.json"
+    model_name = Path(args.model).stem
+    output_path = Path(args.output) if args.output else Path(config.log_dir) / config.experiment_name / f"evaluation_{model_name}_summary.json"
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(summary, indent=2))
     print(json.dumps(summary, indent=2))

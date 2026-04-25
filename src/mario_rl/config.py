@@ -34,6 +34,12 @@ class ExperimentConfig:
     resize_shape: list[int] = field(default_factory=lambda: [84, 84])
     train_reward_path: str | None = None
     log_dir: str = "artifacts"
+    record_videos: bool = False
+    video_freq: int | None = None
+    video_length: int = 10000
+    video_fps: int = 30
+    video_format: str = "mp4"
+    device: str = "auto"
     ppo: PPOConfig = field(default_factory=PPOConfig)
 
     @classmethod
@@ -44,4 +50,3 @@ class ExperimentConfig:
 
     def to_json_dict(self) -> dict:
         return asdict(self)
-

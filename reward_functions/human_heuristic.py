@@ -5,8 +5,15 @@ import math
 # Milestone x_pos checkpoints — each awards a one-time bonus to pull Mario
 # through the level section by section. Without these, the flag bonus at x≈3000
 # is never discovered, so the agent has no signal to go past its current peak.
-_MILESTONES = [500, 1000, 1500, 2000, 2500]
-_MILESTONE_BONUS = 100.0
+
+# v2 milestones — sparse past x=1000, agent plateaued at x≈800-850 then
+# broke through to reward 1435 but remained inconsistent past x=1000.
+# _MILESTONES = [200, 400, 600, 800, 1000, 1500, 2000, 2500]
+
+# v3 milestones — denser coverage from x=1000 onward to pull Mario through
+# the second half of the level where v2 was inconsistent.
+_MILESTONES = [200, 400, 600, 800, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000, 2250, 2500]
+_MILESTONE_BONUS = 50.0
 
 
 def _sqrt_transform(r: float) -> float:

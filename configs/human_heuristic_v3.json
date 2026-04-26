@@ -1,8 +1,8 @@
 {
-  "experiment_name": "human_heuristic_v2_seed0",
+  "experiment_name": "human_heuristic_v3_seed0",
   "env_id": "SuperMarioBros-1-1-v0",
   "action_set": "SIMPLE_MOVEMENT",
-  "total_timesteps": 3000000,
+  "total_timesteps": 5000000,
   "eval_freq": 25000,
   "n_eval_episodes": 5,
   "seed": 0,
@@ -32,7 +32,7 @@
     "gamma": 0.99,
     "gae_lambda": 0.95,
     "clip_range": 0.2,
-    "ent_coef": 0.03,
+    "ent_coef": 0.02,
     "vf_coef": 0.5,
     "max_grad_norm": 0.5
   }

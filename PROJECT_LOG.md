@@ -590,3 +590,58 @@ experiment.
 - ppo.ent_coef: 0.01 → 0.03. More entropy encourages exploration of new
   actions at obstacles the agent hasn't seen before. Without this, the
   policy repeats the same moves at new pipes and Goombas.
+
+### 2026-04-25 milestone spacing fix
+
+- Observed: x=500 as the first milestone was too far — it only fired on good
+  episodes, giving no learning signal during the critical early phase where the
+  agent is dying around x=315.
+- Updated milestones to [200, 400, 600, 800, 1000, 1500, 2000, 2500].
+  x=200 fires in almost every episode (agent already reaches ~x=315 in the
+  baseline), giving consistent early feedback from the very first episodes.
+- Reduced bonus from +100 to +50 per milestone so total milestone reward
+  (+400) stays below the flag bonus (+500).
+- Stopped the 3M-step run at 1075k steps and restarting with updated milestones.
+
+### 2026-04-25 switch to SIMPLE_MOVEMENT, increase stagnation cutoff
+
+- COMPLEX_MOVEMENT run (1050k steps) peaked at only 620, trending downward
+  to 230-238 by the end. Worse than the SIMPLE_MOVEMENT run that hit 816.
+- Root cause analysis: COMPLEX_MOVEMENT (12 actions) is too large an
+  exploration space. The agent kept finding ways to waste time with left, down,
+  up combinations instead of learning the jump-right sequence.
+- max_stagnation_steps 64 → 200: 64 agent steps × 4 frame_skip = 256 game
+  frames (~4 seconds) was too tight. The agent needs more attempts per episode
+  to discover the jump sequence at each new obstacle before the episode cuts off.
+  200 steps = 800 game frames (~13 seconds) gives 3-4 full jump attempts.
+- action_set: COMPLEX_MOVEMENT → SIMPLE_MOVEMENT. Our best result (816 reward)
+  came from SIMPLE_MOVEMENT. It includes left and jump-in-place (A) for
+  flexibility without the 12-action exploration penalty of COMPLEX_MOVEMENT.
+- Restarting 3M step run with: SIMPLE_MOVEMENT, max_stagnation_steps=200,
+  milestones [200,400,600,800,1000,1500,2000,2500] at +50 each, ent_coef=0.03.
+
+### 2026-04-26 human heuristic v2 final results
+
+- Completed `human_heuristic_v2_seed0` at 3,000,000 timesteps.
+- Config: SIMPLE_MOVEMENT, frame_skip=4, max_stagnation_steps=200, n_envs=4,
+  ent_coef=0.03, milestones [200,400,600,800,1000,1500,2000,2500] at +50 each.
+- Evaluation summary (120 total checkpoints):
+  - Best mean reward: **1435.0** at step 2,525,000
+  - Evals above 800: 7
+  - Evals above 500: 31
+- Progressive best-reward history:
+  - 231 → 250 → 347 → 504 → 653 → 812 → 816 → **1432 → 1435**
+- Key observation: the agent plateaued near 816 from steps 1.05M–2.3M,
+  then broke through to 1432–1435 in the final third of training.
+  This matches the milestone structure working as intended — the agent
+  eventually learned to push past the x≈800–850 obstacle cluster.
+- Late-run variance is high (last 10 evals range from −28 to 757).
+  The best_model.zip at step 2,525,000 is the recommended model for
+  reporting; the final checkpoint regressed.
+- Comparison against baseline (best model):
+  - Baseline: reward 252, x_pos 315, completion rate 0%
+  - Human heuristic v2: reward 1435, significantly further through level
+- Next step: record best_model.zip as video to confirm actual x_pos reached.
+- Next run candidate: add denser milestones in the 1000–2500 range
+  (every 100–200 units) to provide stronger pull through the second half
+  of the level where the agent is still inconsistent.

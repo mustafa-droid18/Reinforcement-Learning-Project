@@ -620,6 +620,37 @@ experiment.
 - Restarting 3M step run with: SIMPLE_MOVEMENT, max_stagnation_steps=200,
   milestones [200,400,600,800,1000,1500,2000,2500] at +50 each, ent_coef=0.03.
 
+### 2026-04-26 human heuristic iteration audit
+
+The full history of manual tuning iterations that produced the final heuristic
+is recorded here for the project comparison. Artifacts from early runs were
+overwritten during experimentation; only v2 and v3 artifacts remain on disk.
+
+**Total reward/config iterations: 8**
+
+| # | What changed | Why | Outcome |
+|---|---|---|---|
+| 1 | Initial design: forward progress, backward penalty, score delta, flag +500, death -100, n_envs=4, n_steps=128, 1M steps | Baseline died at x=315, needed basic shaping | Agent still failed at first Goomba |
+| 2 | Added sqrt reward transform | 5000:1 reward ratio swamped value function gradients | Stabilized gradient scale |
+| 3 | Added FrameSkipWrapper (skip=4), action-specific stagnation penalty -0.3, StagnationTerminationWrapper (max=64) | Single-frame A press physically cannot produce a real Mario jump | Agent could now jump over obstacles |
+| 4 | Raised stagnation penalty -0.3 → -2.0, removed backward penalty, SIMPLE_MOVEMENT → COMPLEX_MOVEMENT | -0.3 compressed to ≈-0.14 by sqrt transform, too mild; backward penalty blocked the back-up-then-jump maneuver | Agent more willing to back up at pipes |
+| 5 | Added milestones [500,1000,1500,2000,2500] at +100 each, 1M → 3M timesteps, ent_coef 0.01 → 0.03 | Agent peaked at x≈856 with no signal to go further; flag bonus unreachable | Milestone structure added |
+| 6 | Moved first milestone from 500 → 200, reduced bonus +100 → +50, revised spacing to [200,400,600,800,1000,1500,2000,2500] | x=500 milestone never fired during early training (agent dying at x=315) | Consistent early feedback signal |
+| 7 | COMPLEX_MOVEMENT → SIMPLE_MOVEMENT, max_stagnation 64 → 200 | COMPLEX_MOVEMENT (12 actions) peaked at 620, worse than SIMPLE_MOVEMENT's 816; 64-step cutoff too tight for jump discovery | Became the v2 final config |
+| 8 | Denser milestones every 100 units from x=1000–2000, ent_coef 0.03 → 0.02, 3M → 5M steps | v2 agent was inconsistent past x=1000 (500-unit gap with no milestone signal); lower entropy to consolidate learned behavior | v3 final config |
+
+In addition to the 8 reward/config iterations, three infrastructure bugs required
+fixes that affected training correctness (not logged as tuning iterations):
+- Video recording produced a 2×2 tiled frame (n_envs=4 used for recording)
+- Callback eval/video frequencies did not scale with n_envs
+- DummyVecEnv lambda closure captured shared reference instead of per-env copy
+
+**Key observation for the project write-up:** a human expert needed 8 deliberate
+iterations, direct observation of failure modes through videos, and domain
+knowledge about action sets, frame skip, and reward scale to reach the final
+heuristic. The LLM comparison should be evaluated against a first or second
+attempt — not against this fully iterated version.
+
 ### 2026-04-26 human heuristic v2 final results
 
 - Completed `human_heuristic_v2_seed0` at 3,000,000 timesteps.
@@ -645,3 +676,51 @@ experiment.
 - Next run candidate: add denser milestones in the 1000–2500 range
   (every 100–200 units) to provide stronger pull through the second half
   of the level where the agent is still inconsistent.
+
+### 2026-04-26 human heuristic v3 final results
+
+- Completed `human_heuristic_v3_seed0` at 5,000,000 timesteps.
+- Config vs v2: denser milestones (17 checkpoints vs 8), ent_coef 0.03 → 0.02,
+  total_timesteps 3M → 5M. All other settings identical to v2.
+- Evaluation summary (200 total checkpoints):
+  - Best mean reward: **2223.0** at step 4,925,000
+  - Evals above 800: 62
+  - Evals above 1000: 55
+  - Evals above 1435 (v2 best): 15
+- Late-run evals are consistently high: last 10 averaged ~1570, ranging 1088–2223.
+  Much more stable than v2's final oscillations (−28 to 757).
+- Note on v2 vs v3 comparison: two variables changed simultaneously (milestone
+  density and timestep budget). The improvement cannot be cleanly attributed to
+  either alone. For the project write-up, v3 is presented as the final tuned
+  heuristic without decomposing v2→v3 causally.
+
+### 2026-04-26 task-level evaluation — all heuristic runs
+
+Ran `mario_rl.eval` (10 episodes, deterministic, best_model.zip) across all
+complete runs to get environment-native metrics comparable across reward functions.
+
+| Run | Steps | Mean x_pos | Mean Score | Completion | Mean Reward |
+|---|---|---|---|---|---|
+| Baseline | 300k | 315 | 0 | 0% | 252 |
+| Human heuristic v2 | 3M | 1523 | 0 | 0% | 1435 |
+| Human heuristic v3 | 5M | **2354** | **500** | 0% | 2223 |
+
+- x_pos is the primary task metric for cross-run comparison (reward values
+  are not comparable across different reward functions).
+- v3 reaches x=2354, which is ~74% through World 1-1 (flag at x≈3166).
+- v3 mean score of 500 confirms Mario is actively stomping enemies.
+- No run achieved level completion. The remaining ~800 units to the flag
+  represents the next learning challenge.
+
+### 2026-04-26 LLM experiment framing and success criteria
+
+- Human heuristic took 8 manual tuning iterations over multiple days.
+- Fair LLM comparison: evaluate LLM v1 against human heuristic v1 (first
+  attempt), not v3 (fully iterated). The honest question is whether an LLM
+  can match or exceed a human's first-attempt reward function.
+- LLM runs will use 5M timesteps to match v3's training budget.
+- Success criteria for LLM runs (task metrics only, not shaped reward):
+  - LLM v1 beats baseline (x_pos > 315) — LLM reward generation works at all
+  - LLM v2 beats LLM v1 — LLM feedback loop improves the reward iteratively
+  - LLM v1 is competitive with human heuristic v1 first attempt (x_pos ~898)
+  - Stretch: LLM v2 approaches v3 x_pos of 2354 without 8 iterations of tuning

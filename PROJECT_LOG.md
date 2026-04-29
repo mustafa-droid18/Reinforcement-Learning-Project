@@ -1128,3 +1128,71 @@ Deterministic (deterministic=True):
 - steps: mean=455, std=0
 
 **Note:** 3 episodes reached x=3161 (flag). Deterministic policy reliably reaches 2354. This is the strongest result across all agents evaluated so far. Sets the bar for the LLM v1 final 5M run.
+
+---
+
+### 2026-04-28 Human heuristic v3 stochastic retrain — final eval
+
+Evaluated `artifacts/human_heuristic_v3_seed0_stochastic/models/best_model.zip` (5M steps, trained with det=False eval methodology).
+
+**Stochastic (deterministic=False, 20 episodes):**
+- x_pos: mean=1934, std=422, min=898, max=2475
+- score: mean=410, std=259
+- flags: 0/20
+- all x_pos: [1787, 1794, 1671, 1665, 1654, 1664, 2469, 898, 2467, 2006, 1433, 1957, 1919, 1410, 2472, 2227, 2226, 2471, 2475, 2007]
+
+**Deterministic (deterministic=True, 20 episodes):**
+- x_pos: mean=1797, std=0
+
+**Note:** Training with det=False eval produced a weaker best checkpoint than the original v3 (det=True) run. The original v3's best checkpoint at 4.925M was simply a stronger policy — methodology change alone does not guarantee improvement.
+
+---
+
+### 2026-04-28 Human heuristic v4 (10M) — final eval
+
+Evaluated `artifacts/human_heuristic_v4_seed0/models/best_model.zip` (10M steps).
+
+**Stochastic (deterministic=False, 20 episodes):**
+- x_pos: mean=2378, std=935, min=594, max=3161
+- score: mean=220, std=166
+- flags: 9/20
+- all x_pos: [2466, 2759, 3161, 3161, 3161, 2466, 594, 2466, 2469, 1228, 3161, 3161, 3161, 1959, 3161, 3161, 594, 594, 1523, 3161]
+
+**Deterministic (deterministic=True, 20 episodes):**
+- x_pos: mean=2402, std=0
+
+**Note:** Dominant result. 9/20 flag completions. Deterministic policy consistently reaches x=2402. This is the strongest agent across all runs. Extra 5M steps over v3 yielded massive improvement in flag completion rate (3/20 → 9/20).
+
+---
+
+### 2026-04-28 LLM v1 R3 Final (5M) — final eval
+
+Evaluated `artifacts/llm_v1_r3_final_seed0/models/best_model.zip`. Best checkpoint: step 4,775,000.
+
+**Stochastic (deterministic=False, 20 episodes):**
+- x_pos: mean=1441, std=355, min=696, max=1909
+- score: mean=225, std=228
+- steps: mean=192
+- flags: 0/20
+- all x_pos: [1759, 1429, 1672, 1670, 1435, 898, 1896, 1434, 1665, 1434, 1675, 696, 1127, 1674, 1909, 1433, 1528, 830, 898, 1767]
+
+**Deterministic (deterministic=True, 20 episodes):**
+- x_pos: mean=1904, std=0
+
+**Note:** R3 at 5M slightly outperforms R1 at 5M in stochastic mean (1441 vs 1374) and substantially in deterministic (1904 vs 1129). Lower upside ceiling than R1 (max 1909 vs 2130). Neither clears the flag.
+
+---
+
+### 2026-04-28 All runs complete — final comparison
+
+| Agent | Steps | Stoch mean x_pos | Stoch max | Flags | Det x_pos |
+|-------|-------|-----------------|-----------|-------|-----------|
+| Baseline | 1M | 579 | 722 | 0/20 | — |
+| LLM R1 (loop round 1) | 1M | 1167 | 1511 | 0/20 | — |
+| LLM v1 Final (R1) | 5M | 1374 | 2130 | 0/20 | 1129 |
+| LLM v1 R3 Final | 5M | 1441 | 1909 | 0/20 | 1904 |
+| Human v3 (original) | 5M | 2044 | 3161 | 3/20 | 2354 |
+| Human v3 (stoch retrain) | 5M | 1934 | 2475 | 0/20 | 1797 |
+| Human v4 | 10M | 2378 | 3161 | 9/20 | 2402 |
+
+Improvement over baseline: LLM 1M +101%, LLM 5M +137%, Human 5M +253%, Human 10M +311%.

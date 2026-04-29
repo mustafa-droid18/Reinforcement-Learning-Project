@@ -139,3 +139,62 @@ Notable: no full collapse, sustained strong performance from 600k onwards. Tight
 - **R5 over-corrected**: Ultra-conservative shaping produced a locked-in policy (std=2) with no exploration ceiling
 - **Deterministic collapse at x=434**: R2 and R3 both show deterministic policy stuck at 434 — likely a local structure in the level (small ledge/enemy) that the greedy policy loops on. Stochastic sampling breaks past it
 - **R1 selected for final 5M run**: Best stochastic mean (1167), no collapse, moderate design that balances native br signal with modest shaping
+
+---
+
+## LLM v1 Final — 5M Run (R1 reward function)
+
+**Reward function**: `reward_functions/llm_v1_final.py` (identical to R1)
+**Config**: `configs/llm_v1_final.json` — 5M steps, n_envs=4, ent_coef=0.02, deterministic=False eval.
+
+**Training curve (shaped reward, eval every 25k):**
+Best checkpoint: step 1,475,000 — mean shaped reward=1127.9, max=1635.
+Notable: converged early, best checkpoint well before midpoint — diminishing returns past 1.5M steps.
+
+**Task metrics — 20 stochastic episodes, best_model.zip, unshaped reward:**
+- x_pos: mean=1374, std=502, min=434, max=2130
+- score: mean=305, std=213
+- steps: mean=239, std=107
+- all x_pos: [1508, 2130, 1417, 2022, 1130, 1128, 1945, 2130, 722, 434, 1495, 1517, 722, 677, 898, 1419, 1512, 1128, 1521, 2023]
+
+**Deterministic eval (20 episodes):**
+- x_pos: mean=1129, std=0 — locked to fixed trajectory at pipe/gap obstacle
+
+**Note:** +18% improvement in mean x_pos over R1 at 1M (1374 vs 1167); +41% improvement in max (2130 vs 1511). Zero flag completions. Deterministic policy traps at x=1129 (pipe/gap); stochastic sampling occasionally clears it and reaches x=2000+. Best LLM result overall.
+
+---
+
+## LLM v1 R3 Final — 5M Run
+
+**Reward function**: `reward_functions/llm_v1_r3.py`
+**Config**: `configs/llm_v1_r3_final.json` — 5M steps, same hyperparameters.
+
+**Training curve (shaped reward, eval every 25k):**
+Best checkpoint: step 4,775,000 — mean shaped reward=1462.3, max=1814.
+Notable: continued improving through 4.75M steps; more sample-efficient than R1 (best R1 checkpoint was at 1.475M; R3 kept improving to 4.775M).
+
+**Task metrics — 20 stochastic episodes, best_model.zip, unshaped reward:**
+- x_pos: mean=1441, std=355, min=696, max=1909
+- score: mean=225, std=228
+- steps: mean=192
+- flags: 0/20
+- all x_pos: [1759, 1429, 1672, 1670, 1435, 898, 1896, 1434, 1665, 1434, 1675, 696, 1127, 1674, 1909, 1433, 1528, 830, 898, 1767]
+
+**Deterministic eval (20 episodes):**
+- x_pos: mean=1904, std=0 — significantly better greedy policy than R1 (1129 det)
+
+**Note:** R3 at 5M slightly edges R1 in stochastic mean (1441 vs 1374) and substantially outperforms in deterministic (1904 vs 1129). R3's greedy policy is more reliably positioned. However R3's upside ceiling is lower — max of 1909 vs R1's 2130. Neither clears the flag.
+
+---
+
+## Final Results Summary
+
+| Agent | Steps | Stoch mean x_pos | Stoch max | Flags | Det x_pos |
+|-------|-------|-----------------|-----------|-------|-----------|
+| Baseline | 1M | 579 | 722 | 0/20 | — |
+| LLM R1 (loop round 1) | 1M | 1167 | 1511 | 0/20 | — |
+| LLM v1 Final (R1) | 5M | 1374 | 2130 | 0/20 | 1129 |
+| LLM v1 R3 Final | 5M | 1441 | 1909 | 0/20 | 1904 |
+| Human v3 (original) | 5M | 2044 | 3161 | 3/20 | 2354 |
+| Human v3 (stoch retrain) | 5M | 1934 | 2475 | 0/20 | 1797 |
+| Human v4 | 10M | 2378 | 3161 | 9/20 | 2402 |

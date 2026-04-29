@@ -1,3 +1,18 @@
+"""Mario environment construction and custom Gym wrappers.
+
+Builds a single Mario environment from an ExperimentConfig by composing:
+  - GymApiCompatibilityWrapper  — bridges nes-py's old 4-return step API to the
+                                   modern 5-return (obs, reward, terminated, truncated, info)
+  - FrameSkipWrapper            — repeats each action for `frame_skip` game frames,
+                                   making full Mario jumps learnable from a single action
+  - StagnationTerminationWrapper — truncates episodes when x_pos stops improving,
+                                   preventing the agent wasting rollouts on stuck loops
+  - RecordEpisodeStatistics     — standard SB3 episode logging
+  - GrayScaleObservation / ResizeObservation — pixel preprocessing to 84x84 greyscale
+  - RewardShapingWrapper        — applies a custom reward function if provided;
+                                   receives (base_reward, prev_info, info, action,
+                                   terminated, truncated) and must return a finite float
+"""
 from __future__ import annotations
 
 from typing import Callable

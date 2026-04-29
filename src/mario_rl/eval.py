@@ -1,3 +1,15 @@
+"""Evaluation entrypoint for trained Mario PPO agents.
+
+Loads a saved model, runs N episodes with the unshaped native Mario reward,
+and writes a JSON summary of per-episode and aggregate task metrics
+(x_pos, score, coins, flag completions, episode length).
+
+Usage:
+    PYTHONPATH=src python -m mario_rl.eval \
+        --config configs/llm/llm_v1_final.json \
+        --model artifacts/llm_v1_final_seed0/models/best_model.zip \
+        --episodes 20
+"""
 from __future__ import annotations
 
 import argparse

@@ -1,3 +1,13 @@
+"""Vectorised environment builder for Mario PPO training and evaluation.
+
+Wraps `build_env` in a DummyVecEnv of `config.n_envs` parallel environments,
+then applies VecMonitor, VecTransposeImage, and VecFrameStack in the correct
+order for Stable-Baselines3's CnnPolicy.
+
+Training envs are built with a reward function; eval envs are built with
+reward_path=None so evaluation always uses the unshaped native Mario reward
+and results are directly comparable across different reward functions.
+"""
 from __future__ import annotations
 
 from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack, VecMonitor, VecTransposeImage

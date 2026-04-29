@@ -1,3 +1,15 @@
+"""Reward function loader and validator.
+
+Dynamically loads a reward function from a .py file at runtime so that
+different reward designs can be swapped without modifying training code.
+
+Each reward file must define a `compute_reward` function with signature:
+    compute_reward(*, base_reward, prev_info, info, action, terminated, truncated) -> float
+
+The function must be stateless — training uses 4 parallel environments that
+share all module-level state, so any per-episode state stored at module level
+will be contaminated across environments simultaneously.
+"""
 from __future__ import annotations
 
 from importlib.util import module_from_spec, spec_from_file_location

@@ -1,3 +1,14 @@
+"""Converts a Stable-Baselines3 evaluations.npz file to a human-readable CSV.
+
+EvalCallback saves per-checkpoint rewards and episode lengths as a compressed
+numpy archive. This script unpacks that archive into a CSV with one row per
+evaluation checkpoint, showing mean/min/max reward and episode length.
+
+Usage:
+    PYTHONPATH=src python -m mario_rl.summarize_eval \
+        --npz artifacts/baseline_seed0/eval/evaluations.npz \
+        --output artifacts/baseline_seed0/eval/evaluation_history.csv
+"""
 from __future__ import annotations
 
 import argparse

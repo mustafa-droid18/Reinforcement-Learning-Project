@@ -1,3 +1,13 @@
+"""Training entrypoint for Mario PPO experiments.
+
+Reads an experiment JSON config, builds vectorised training and evaluation
+environments, trains a PPO agent via Stable-Baselines3, and saves the best
+checkpoint (by eval reward) and the final checkpoint to
+artifacts/<experiment_name>/models/.
+
+Usage:
+    PYTHONPATH=src python -m mario_rl.train --config configs/baseline.json
+"""
 from __future__ import annotations
 
 import argparse

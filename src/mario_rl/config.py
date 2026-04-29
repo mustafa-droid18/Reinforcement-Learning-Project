@@ -1,3 +1,12 @@
+"""Experiment and PPO configuration dataclasses.
+
+ExperimentConfig holds all settings for one training run — environment,
+PPO hyperparameters, reward path, logging, and video options. Configs are
+stored as JSON files under configs/ and loaded via ExperimentConfig.from_json().
+
+PPOConfig mirrors the Stable-Baselines3 PPO constructor arguments so that
+hyperparameters are fully specified in the JSON file and not hardcoded.
+"""
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field

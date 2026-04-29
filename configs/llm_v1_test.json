@@ -4,7 +4,7 @@
   "action_set": "SIMPLE_MOVEMENT",
   "total_timesteps": 1000000,
   "eval_freq": 25000,
-  "n_eval_episodes": 5,
+  "n_eval_episodes": 10,
   "seed": 0,
   "n_envs": 4,
   "frame_skip": 4,

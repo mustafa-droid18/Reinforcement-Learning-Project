@@ -53,7 +53,7 @@ def main() -> None:
             log_path=str(eval_dir),
             eval_freq=_callback_freq(config.eval_freq, config.n_envs),
             n_eval_episodes=config.n_eval_episodes,
-            deterministic=True,
+            deterministic=False,
             render=False,
         )
     ]

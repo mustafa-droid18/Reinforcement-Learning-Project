@@ -42,10 +42,10 @@ python -m mario_rl.train --config configs/llm_v1_final.json
 The loop calls Claude (Anthropic API) to generate and iteratively refine a reward function over N rounds. Set your API key, then:
 
 ```bash
-python llm_reward_loop.py --config configs/llm_v1_test_r1.json --rounds 5
+ANTHROPIC_API_KEY=your_key PYTHONPATH=src python llm_reward_loop.py
 ```
 
-Each round trains for 1M steps, evaluates the best checkpoint, and feeds results back to Claude for the next revision.
+Configuration (model, rounds, train config) is set via constants at the top of `llm_reward_loop.py`. Each round trains for 1M steps, evaluates the best checkpoint, and feeds results back to Claude for the next revision.
 
 ## Key results
 

@@ -1217,3 +1217,39 @@ Key observations:
 - v3 at 5M regressed vs 1M (618 vs 661) — reward function did not scale with more compute
 - v5 nearly collapsed (mean=402, most episodes stuck at x≈303) — same failure mode as our R2/R4
 - Their loop's best (854) is below our baseline-beating R1 (1167), showing prompt design matters significantly
+
+---
+
+### 2026-04-29 Final presentation tables — agreed naming and structure
+
+#### Naming convention
+- Our LLM rounds: "Stochastic LLM - Iteration N" (det=False checkpoint selection)
+- Teammate LLM: "Deterministic LLM - Iteration N" (det=True checkpoint selection)
+- Human v3 stoch retrain: "Stochastic Human Heuristic"
+- Human v3 original: "Deterministic Human Heuristic"
+
+#### Rationale for showing both Iteration 1 and Iteration 3 (5M finals)
+- Iteration 1 had best stochastic mean at 1M (1167 vs 1110)
+- Iteration 3 had highest single-episode max at 1M (2011 vs 1511), suggesting potential to reach further with more compute
+- Both selected for 5M final run to compare
+
+#### 1M Reference Table (same reward function, 1M compute)
+
+| Agent | Mean | Std | Min | Max |
+|-------|------|-----|-----|-----|
+| Baseline | 579 | 96 | 312 | 722 |
+| Deterministic LLM - Iteration 3 | 661 | 275 | 296 | 898 |
+| Stochastic LLM - Iteration 1 | 1167 | 242 | 898 | 1511 |
+| Stochastic LLM - Iteration 3 | 1110 | 365 | 312 | 2011 |
+
+Note: Teammate's Iteration 3 shown (not best round v2) for direct 1M→5M comparison consistency.
+
+#### 5M Comparison Table
+
+| Agent | Mean | Std | Min | Max | Flags |
+|-------|------|-----|-----|-----|-------|
+| Deterministic LLM | 618 | 332 | 312 | 1434 | 0/20 |
+| Stochastic LLM - Iteration 1 | 1374 | 502 | 434 | 2130 | 0/20 |
+| Stochastic LLM - Iteration 3 | 1441 | 355 | 696 | 1909 | 0/20 |
+| Stochastic Human Heuristic | 1934 | 422 | 898 | 2475 | 0/20 |
+| Deterministic Human Heuristic | 2044 | 594 | 1431 | 3161 | 3/20 |

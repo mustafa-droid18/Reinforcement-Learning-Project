@@ -1,0 +1,29 @@
+{
+  "experiment_name": "llm_v3_final_seed0",
+  "env_id": "SuperMarioBros-1-1-v0",
+  "action_set": "SIMPLE_MOVEMENT",
+  "total_timesteps": 300000,
+  "eval_freq": 25000,
+  "n_eval_episodes": 5,
+  "seed": 0,
+  "frame_stack": 4,
+  "grayscale": true,
+  "resize_shape": [84, 84],
+  "train_reward_path": "reward_functions/llm_v3.py",
+  "log_dir": "artifacts",
+  "record_videos": false,
+  "device": "auto",
+  "ppo": {
+    "policy": "CnnPolicy",
+    "learning_rate": 0.00025,
+    "n_steps": 512,
+    "batch_size": 256,
+    "n_epochs": 4,
+    "gamma": 0.99,
+    "gae_lambda": 0.95,
+    "clip_range": 0.2,
+    "ent_coef": 0.01,
+    "vf_coef": 0.5,
+    "max_grad_norm": 0.5
+  }
+}

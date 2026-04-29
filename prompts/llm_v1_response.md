@@ -1,3 +1,4 @@
+```python
 def compute_reward(*, base_reward: float, prev_info: dict, info: dict,
                    action: int, terminated: bool, truncated: bool) -> float:
 
@@ -52,3 +53,4 @@ def compute_reward(*, base_reward: float, prev_info: dict, info: dict,
         reward += 200.0
 
     return reward
+```

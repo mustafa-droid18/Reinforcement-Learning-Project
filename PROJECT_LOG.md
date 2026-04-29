@@ -185,7 +185,7 @@ Key observations:
 ## Final Presentation Tables and Naming Convention
 
 ### Naming convention
-- "Stochastic LLM - Iteration N": our loop (det=False checkpoint selection)
+- "Stochastic LLM - Iteration N": det=False checkpoint selection
 - "Deterministic LLM - Iteration N": det=True checkpoint selection
 - "Stochastic Human Heuristic": human v3 stoch retrain (det=False trained)
 - "Deterministic Human Heuristic": human v3 original (det=True trained)

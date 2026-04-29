@@ -190,7 +190,7 @@ Rationale: best stochastic mean, no collapse, proven stable design.
 ## Final Comparison
 
 ### Naming Convention
-- **LLM, det=False selection**: Our LLM loop runs — stochastic checkpoint selection, n=10 eval episodes
+- **LLM, det=False selection**: stochastic checkpoint selection, n=10 eval episodes
 - **LLM, det=True selection**: deterministic checkpoint selection, n=5 eval episodes
 - **Stochastic Human Heuristic**: Human v3 stoch retrain — `det=False` checkpoint selection
 - **Deterministic Human Heuristic**: Human v3 original — `det=True` checkpoint selection

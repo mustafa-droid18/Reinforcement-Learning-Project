@@ -98,7 +98,7 @@ No dedicated 1M-step run was evaluated with task metrics (best_model.zip is alwa
 ## LLM Reward Loop — Methodology
 
 ### Setup
-- **Model**: Claude Sonnet (Anthropic API)
+- **Model**: Claude Opus 4 (`claude-opus-4-7`, Anthropic API)
 - **Rounds**: 5 rounds per attempt, each 1M steps
 - **Feedback per round**: task metrics (x_pos, score, steps), full eval learning curve, last-8-update training diagnostics (ep_rew_mean, ep_len_mean, entropy_loss, explained_variance from TensorBoard)
 - **Eval during training**: `deterministic=False`, `n_eval_episodes=10` (stochastic checkpoint selection)
@@ -230,7 +230,7 @@ Rationale: best stochastic mean, no collapse, proven stable design.
 | `artifacts/baseline_seed0/` | Baseline training run |
 | `artifacts/human_heuristic_v3_seed0/` | Human heuristic v3, 5M steps |
 | `artifacts/llm_v1_final_seed0/` | LLM final, 5M steps (R1 reward) |
-| `artifacts/llm_v1_r3_final_seed0/` | LLM R3, 5M steps (in progress) |
+| `artifacts/llm_v1_r3_final_seed0/` | LLM R3, 5M steps |
 | `artifacts/eval_videos/llm_v1_final_best_model.mp4` | LLM final best model video |
 | `artifacts/eval_videos/human_v3_best_model.mp4` | Human v3 best model video |
 | `reward_functions/llm_v1_final.py` | Final LLM reward function |

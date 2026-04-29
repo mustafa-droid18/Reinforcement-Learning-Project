@@ -1,4 +1,4 @@
-# LLM Reward Loop Log — v1 Fifth Attempt (in progress)
+# LLM Reward Loop Log — v1 Fifth Attempt (complete)
 
 Tracks each round of the automated LLM reward generation loop for v1.
 All training: 1M steps, SIMPLE_MOVEMENT, frame_skip=4, n_envs=4, max_stagnation=200, ent_coef=0.02, device=auto.

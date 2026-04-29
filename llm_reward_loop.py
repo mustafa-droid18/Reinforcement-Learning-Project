@@ -38,10 +38,10 @@ from tensorboard.backend.event_processing.event_accumulator import EventAccumula
 
 MAX_ROUNDS = 5
 MODEL = "claude-opus-4-7"
-TRAIN_CONFIG = "configs/llm_v1_test.json"
+TRAIN_CONFIG = "configs/stochastic_llm/llm_v1_test_r1.json"
 PYTHONPATH = "src"
 
-REWARD_DIR = Path("reward_functions")
+REWARD_DIR = Path("reward_functions/stochastic_llm")
 PROMPTS_DIR = Path("prompts")
 PROMPTS_DIR.mkdir(exist_ok=True)
 
@@ -174,7 +174,7 @@ def run_training(round_num: int, reward_path: Path) -> bool:
     config = json.loads(Path(TRAIN_CONFIG).read_text())
     config["experiment_name"] = f"llm_v1_test_r{round_num}"
     config["train_reward_path"] = str(reward_path)
-    tmp_config = Path(f"configs/llm_v1_test_r{round_num}.json")
+    tmp_config = Path(f"configs/stochastic_llm/llm_v1_test_r{round_num}.json")
     tmp_config.write_text(json.dumps(config, indent=2))
 
     print(f"\n[Round {round_num}] Training for 1M steps...")
@@ -195,7 +195,7 @@ def eval_best_model(round_num: int, n_episodes: int = 20) -> dict | None:
         from mario_rl.config import ExperimentConfig
         from mario_rl.vec_env import build_vec_env
 
-        config_path = Path(f"configs/llm_v1_test_r{round_num}.json")
+        config_path = Path(f"configs/stochastic_llm/llm_v1_test_r{round_num}.json")
         config = ExperimentConfig.from_json(str(config_path))
         env = build_vec_env(config, reward_path=None)
         model = PPO.load(str(model_path))

@@ -1196,3 +1196,24 @@ Evaluated `artifacts/llm_v1_r3_final_seed0/models/best_model.zip`. Best checkpoi
 | Human v4 | 10M | 2378 | 3161 | 9/20 | 2402 |
 
 Improvement over baseline: LLM 1M +101%, LLM 5M +137%, Human 5M +253%, Human 10M +311%.
+
+---
+
+### 2026-04-29 Teammate LLM loop (different prompt) — eval
+
+Teammate ran their own LLM reward loop (5 rounds × 1M steps) with a different prompt design, plus a 5M final run using their v3 reward function. Evaluated with our standard methodology: 20-episode stochastic eval, unshaped native reward, best_model.zip.
+
+| Agent | Steps | Stoch mean x_pos | Stoch max | Flags | All x_pos |
+|-------|-------|-----------------|-----------|-------|-----------|
+| Teammate LLM v1 | 1M | 786 | 1440 | 0/20 | [313,1123,898,709,312,1121,722,1440,1154,795,807,313,313,898,898,1152,853,315,692,898] |
+| Teammate LLM v2 | 1M | 854 | 1521 | 0/20 | [722,303,710,802,1125,868,1140,898,708,706,1138,306,1443,685,722,310,1410,838,1521,722] |
+| Teammate LLM v3 | 1M | 661 | 898 | 0/20 | [858,898,877,296,898,308,898,898,898,898,898,285,296,309,898,275,286,722,708,809] |
+| Teammate LLM v4 | 1M | 721 | 1151 | 0/20 | [864,722,310,898,898,707,722,898,898,898,722,672,898,312,722,826,309,678,1151,311] |
+| Teammate LLM v5 | 1M | 402 | 1433 | 0/20 | [304,302,303,304,304,303,300,304,305,303,300,1138,302,312,1433,303,302,302,303,304] |
+| Teammate LLM v3 (5M) | 5M | 618 | 1434 | 0/20 | [313,313,312,706,313,312,1152,691,1434,314,313,684,898,709,314,314,706,703,700,1152] |
+
+Key observations:
+- Best round: v2 at 1M (mean=854) — weaker than our R1 (mean=1167)
+- v3 at 5M regressed vs 1M (618 vs 661) — reward function did not scale with more compute
+- v5 nearly collapsed (mean=402, most episodes stuck at x≈303) — same failure mode as our R2/R4
+- Their loop's best (854) is below our baseline-beating R1 (1167), showing prompt design matters significantly

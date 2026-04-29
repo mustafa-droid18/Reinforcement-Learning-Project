@@ -16,7 +16,7 @@ Full methodology, result tables, and interpretation are in `REPORT_REFERENCE.md`
 
 All task evaluations: `best_model.zip`, 20 stochastic episodes (`deterministic=False`), unshaped native Mario reward for comparability.
 
-**Naming**: "Stochastic LLM" = our loop (`det=False` checkpoint selection). "Deterministic LLM" = teammate loop (`det=True` checkpoint selection). Same distinction applies to Human Heuristic runs.
+**Naming**: "Stochastic LLM" = LLM loop with `det=False` checkpoint selection. "Deterministic LLM" = LLM loop with `det=True` checkpoint selection. Same distinction applies to Human Heuristic runs.
 
 ### 1M Reference (equal compute)
 

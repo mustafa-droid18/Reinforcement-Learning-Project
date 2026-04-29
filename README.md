@@ -49,10 +49,16 @@ Configuration (model, rounds, train config) is set via constants at the top of `
 
 ## Key results
 
-| Agent | Steps | Stoch mean x_pos | Flags |
-|-------|-------|-----------------|-------|
-| Baseline | 1M | 579 | 0/20 |
-| LLM v1 Final | 5M | 1374 | 0/20 |
-| Human v4 | 10M | 2378 | 9/20 |
+All task evals: 20 episodes on `best_model.zip`, unshaped native reward.
+
+| Agent | Train steps | Train eval | Stoch mean x_pos | Stoch max | Flags | Det x_pos |
+|-------|------------|------------|-----------------|-----------|-------|-----------|
+| Baseline | 1M | det=True | 579 | 722 | 0/20 | — |
+| LLM v1 R1 (loop round 1) | 1M | det=False | 1167 | 1511 | 0/20 | — |
+| LLM v1 Final (R1, 5M) | 5M | det=False | 1374 | 2130 | 0/20 | 1129 |
+| LLM v1 R3 Final | 5M | det=False | 1441 | 1909 | 0/20 | 1904 |
+| Human v3 (original) | 5M | det=True, n=5 | 2044 | 3161 | 3/20 | 2354 |
+| Human v3 (stoch retrain) | 5M | det=False, n=10 | 1934 | 2475 | 0/20 | 1797 |
+| Human v4 | 10M | det=True, n=5 | 2378 | 3161 | 9/20 | 2402 |
 
 See `REPORT_REFERENCE.md` for full methodology and results.

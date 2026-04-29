@@ -43,7 +43,7 @@ All evals: 20 stochastic episodes (`deterministic=False`) on `best_model.zip`, u
 |-----|-------|----------------------|-----------------|-----------|-------|---------|
 | v3 (original) | 5M | det=True, n=5 | 2044 | 3161 | 3/20 | 2354 |
 | v3 stochastic retrain | 5M | det=False, n=10 | 1934 | 2475 | 0/20 | 1797 |
-| **v4** | **10M** | det=False(?), n=5 | **2378** | **3161** | **9/20** | **2402** |
+| **v4** | **10M** | det=True, n=5 | **2378** | **3161** | **9/20** | **2402** |
 
 Note: v3 retrain with `deterministic=False` performed worse than original v3 with `deterministic=True` — the original's best checkpoint at 4.925M was simply a stronger policy. Methodology change alone does not guarantee improvement.
 

@@ -1,23 +1,23 @@
 {
-  "experiment_name": "human_heuristic_seed0",
+  "experiment_name": "llm_v1_test_r2",
   "env_id": "SuperMarioBros-1-1-v0",
-  "action_set": "COMPLEX_MOVEMENT",
+  "action_set": "SIMPLE_MOVEMENT",
   "total_timesteps": 1000000,
   "eval_freq": 25000,
-  "n_eval_episodes": 5,
+  "n_eval_episodes": 10,
   "seed": 0,
   "n_envs": 4,
   "frame_skip": 4,
-  "max_stagnation_steps": 64,
+  "max_stagnation_steps": 200,
   "frame_stack": 4,
   "grayscale": true,
   "resize_shape": [
     84,
     84
   ],
-  "train_reward_path": "reward_functions/human_heuristic.py",
+  "train_reward_path": "reward_functions/llm/llm_v1_r2.py",
   "log_dir": "artifacts",
-  "record_videos": true,
+  "record_videos": false,
   "video_freq": 25000,
   "video_length": 10000,
   "video_fps": 30,
@@ -32,7 +32,7 @@
     "gamma": 0.99,
     "gae_lambda": 0.95,
     "clip_range": 0.2,
-    "ent_coef": 0.01,
+    "ent_coef": 0.02,
     "vf_coef": 0.5,
     "max_grad_norm": 0.5
   }

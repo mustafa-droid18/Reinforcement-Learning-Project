@@ -189,26 +189,57 @@ Rationale: best stochastic mean, no collapse, proven stable design.
 
 ## Final Comparison
 
-| Agent | Training Steps | Stoch x_pos mean | Stoch x_pos max | Flag completions | Det x_pos |
-|-------|---------------|-----------------|-----------------|-----------------|-----------|
-| Baseline | 1M | 579 | 722 | 0/20 | — |
-| LLM v1 R1 | 1M | 1167 | 1511 | 0/20 | — |
-| LLM v1 Final (R1) | 5M | 1374 | 2130 | 0/20 | 1129 |
-| LLM v1 R3 Final | 5M | 1441 | 1909 | 0/20 | 1904 |
-| Human v3 (original) | 5M | 2044 | 3161 | 3/20 | 2354 |
-| Human v3 (stoch retrain) | 5M | 1934 | 2475 | 0/20 | 1797 |
-| **Human v4** | **10M** | **2378** | **3161** | **9/20** | **2402** |
+### Naming Convention
+- **Stochastic LLM**: Our LLM loop runs — `det=False` checkpoint selection, n=10 eval episodes
+- **Deterministic LLM**: Teammate LLM loop runs — `det=True` checkpoint selection, n=5 eval episodes
+- **Stochastic Human Heuristic**: Human v3 stoch retrain — `det=False` checkpoint selection
+- **Deterministic Human Heuristic**: Human v3 original — `det=True` checkpoint selection
+- All task evals: 20-episode stochastic (det=False), unshaped native reward
+
+### Rationale for Iteration 1 and Iteration 3
+- Iteration 1 (R1): best stochastic mean at 1M (1167 vs 1110) — most reliable
+- Iteration 3 (R3): highest single-episode max at 1M (2011 vs 1511) — highest ceiling, selected to test if more compute would unlock further progress
+
+### 1M Reference Table
+
+| Agent | Mean | Std | Min | Max |
+|-------|------|-----|-----|-----|
+| Baseline | 579 | 96 | 312 | 722 |
+| Deterministic LLM - Iteration 3 | 661 | 275 | 296 | 898 |
+| Stochastic LLM - Iteration 1 | 1167 | 242 | 898 | 1511 |
+| Stochastic LLM - Iteration 3 | 1110 | 365 | 312 | 2011 |
+
+Note: Teammate's Iteration 3 shown (not best round v2) for direct 1M→5M comparison consistency.
+
+### 5M Comparison Table
+
+| Agent | Mean | Std | Min | Max | Flags | Det x_pos |
+|-------|------|-----|-----|-----|-------|-----------|
+| Deterministic LLM | 618 | 332 | 312 | 1434 | 0/20 | — |
+| Stochastic LLM - Iteration 1 | 1374 | 502 | 434 | 2130 | 0/20 | 1129 |
+| Stochastic LLM - Iteration 3 | 1441 | 355 | 696 | 1909 | 0/20 | 1904 |
+| Stochastic Human Heuristic | 1934 | 422 | 898 | 2475 | 0/20 | 1797 |
+| Deterministic Human Heuristic | 2044 | 594 | 1431 | 3161 | 3/20 | 2354 |
+
+### Human v4 (10M)
+
+| Agent | Mean | Std | Min | Max | Flags | Det x_pos |
+|-------|------|-----|-----|-----|-------|-----------|
+| Human v4 | 2378 | 935 | 594 | 3161 | 9/20 | 2402 |
+
+Separate from the 5M table — not a fair compute comparison. Shown to demonstrate the human heuristic's scaling ceiling.
 
 ### Improvement over baseline
-- LLM 1M: **+101%** (579→1167)
-- LLM 5M: **+137%** (579→1374)
-- Human 5M: **+253%** (579→2044)
+- Stochastic LLM 1M: **+101%** (579→1167)
+- Stochastic LLM 5M: **+137%** (579→1374)
+- Deterministic Human 5M: **+253%** (579→2044)
 - Human 10M: **+311%** (579→2378)
 
 ### Sample efficiency
-- LLM at 1M already achieves most of its gains; 5M adds only +18% further improvement
-- Human heuristic requires more compute to converge but scales significantly better — 10M steps yields 9/20 flag completions vs 3/20 at 5M
-- R3 (5M) slightly outperforms R1 (5M) in stochastic mean (1441 vs 1374) and det (1904 vs 1129), but R1 has higher upside per episode (max 2130 vs 1909)
+- Stochastic LLM converges fast — most gains by 1M, 5M adds only +18%
+- Human heuristic slower to converge but scales better — milestone structure keeps providing signal through 5M and beyond
+- Iteration 3 (5M) edges Iteration 1 (5M) in mean (1441 vs 1374) and det (1904 vs 1129), but Iteration 1 has higher upside per episode (max 2130 vs 1909)
+- Checkpoint selection methodology interacts with reward design: milestone-based rewards benefit from det=True selection; continuous dx shaping benefits from det=False to avoid greedy traps
 
 ---
 

@@ -1,5 +1,5 @@
 {
-  "experiment_name": "llm_v1_test_r2",
+  "experiment_name": "llm_v1_test_r4",
   "env_id": "SuperMarioBros-1-1-v0",
   "action_set": "SIMPLE_MOVEMENT",
   "total_timesteps": 1000000,
@@ -15,7 +15,7 @@
     84,
     84
   ],
-  "train_reward_path": "reward_functions/stochastic_llm/llm_v1_r2.py",
+  "train_reward_path": "reward_functions/llm/llm_v1_r4.py",
   "log_dir": "artifacts",
   "record_videos": false,
   "video_freq": 25000,

@@ -34,7 +34,7 @@ python -m mario_rl.train --config configs/baseline.json
 python -m mario_rl.train --config configs/human_heuristic_v3.json
 
 # LLM final (R1 reward function, 5M steps)
-python -m mario_rl.train --config configs/llm_v1_final.json
+python -m mario_rl.train --config configs/llm/llm_v1_final.json
 ```
 
 ## Running the LLM reward loop

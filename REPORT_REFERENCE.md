@@ -148,7 +148,7 @@ Rationale: best stochastic mean, no collapse, proven stable design.
 
 ## LLM v1 Final — 5M Run
 
-**Reward function**: `reward_functions/llm_v1_final.py` (identical to R1)
+**Reward function**: `reward_functions/llm/llm_v1_final.py` (identical to R1)
 **Config**: 5M steps, same hyperparameters as rounds.
 
 **Training**: Best checkpoint at step 1,475,000 (mean shaped reward=1127.9, max=1635).
@@ -169,7 +169,7 @@ Rationale: best stochastic mean, no collapse, proven stable design.
 
 ## LLM v1 R3 Final — 5M Run
 
-**Reward function**: `reward_functions/llm_v1_r3.py`
+**Reward function**: `reward_functions/llm/llm_v1_r3.py`
 **Config**: 5M steps, same hyperparameters as other runs.
 
 **Training**: Best checkpoint at step 4,775,000 (mean shaped reward=1462.3, max=1814).
@@ -190,8 +190,8 @@ Rationale: best stochastic mean, no collapse, proven stable design.
 ## Final Comparison
 
 ### Naming Convention
-- **Stochastic LLM**: Our LLM loop runs — `det=False` checkpoint selection, n=10 eval episodes
-- **Deterministic LLM**: Teammate LLM loop runs — `det=True` checkpoint selection, n=5 eval episodes
+- **LLM, det=False selection**: Our LLM loop runs — stochastic checkpoint selection, n=10 eval episodes
+- **LLM, det=True selection**: Teammate LLM loop runs — deterministic checkpoint selection, n=5 eval episodes
 - **Stochastic Human Heuristic**: Human v3 stoch retrain — `det=False` checkpoint selection
 - **Deterministic Human Heuristic**: Human v3 original — `det=True` checkpoint selection
 - All task evals: 20-episode stochastic (det=False), unshaped native reward
@@ -205,9 +205,9 @@ Rationale: best stochastic mean, no collapse, proven stable design.
 | Agent | Mean | Std | Min | Max |
 |-------|------|-----|-----|-----|
 | Baseline | 579 | 96 | 312 | 722 |
-| Deterministic LLM - Iteration 3 | 661 | 275 | 296 | 898 |
-| Stochastic LLM - Iteration 1 | 1167 | 242 | 898 | 1511 |
-| Stochastic LLM - Iteration 3 | 1110 | 365 | 312 | 2011 |
+| LLM, det=True selection - Iteration 3 | 661 | 275 | 296 | 898 |
+| LLM, det=False selection - Iteration 1 | 1167 | 242 | 898 | 1511 |
+| LLM, det=False selection - Iteration 3 | 1110 | 365 | 312 | 2011 |
 
 Note: Teammate's Iteration 3 shown (not best round v2) for direct 1M→5M comparison consistency.
 
@@ -215,9 +215,9 @@ Note: Teammate's Iteration 3 shown (not best round v2) for direct 1M→5M compar
 
 | Agent | Mean | Std | Min | Max | Flags | Det x_pos |
 |-------|------|-----|-----|-----|-------|-----------|
-| Deterministic LLM | 618 | 332 | 312 | 1434 | 0/20 | — |
-| Stochastic LLM - Iteration 1 | 1374 | 502 | 434 | 2130 | 0/20 | 1129 |
-| Stochastic LLM - Iteration 3 | 1441 | 355 | 696 | 1909 | 0/20 | 1904 |
+| LLM, det=True selection | 618 | 332 | 312 | 1434 | 0/20 | — |
+| LLM, det=False selection - Iteration 1 | 1374 | 502 | 434 | 2130 | 0/20 | 1129 |
+| LLM, det=False selection - Iteration 3 | 1441 | 355 | 696 | 1909 | 0/20 | 1904 |
 | Stochastic Human Heuristic | 1934 | 422 | 898 | 2475 | 0/20 | 1797 |
 | Deterministic Human Heuristic | 2044 | 594 | 1431 | 3161 | 3/20 | 2354 |
 
@@ -230,13 +230,13 @@ Note: Teammate's Iteration 3 shown (not best round v2) for direct 1M→5M compar
 Separate from the 5M table — not a fair compute comparison. Shown to demonstrate the human heuristic's scaling ceiling.
 
 ### Improvement over baseline
-- Stochastic LLM 1M: **+101%** (579→1167)
-- Stochastic LLM 5M: **+137%** (579→1374)
+- LLM det=False selection 1M: **+101%** (579→1167)
+- LLM det=False selection 5M: **+137%** (579→1374)
 - Deterministic Human 5M: **+253%** (579→2044)
 - Human 10M: **+311%** (579→2378)
 
 ### Sample efficiency
-- Stochastic LLM converges fast — most gains by 1M, 5M adds only +18%
+- LLM det=False selection converges fast — most gains by 1M, 5M adds only +18%
 - Human heuristic slower to converge but scales better — milestone structure keeps providing signal through 5M and beyond
 - Iteration 3 (5M) edges Iteration 1 (5M) in mean (1441 vs 1374) and det (1904 vs 1129), but Iteration 1 has higher upside per episode (max 2130 vs 1909)
 - Checkpoint selection methodology interacts with reward design: milestone-based rewards benefit from det=True selection; continuous dx shaping benefits from det=False to avoid greedy traps
@@ -264,7 +264,7 @@ Separate from the 5M table — not a fair compute comparison. Shown to demonstra
 | `artifacts/llm_v1_r3_final_seed0/` | LLM R3, 5M steps |
 | `artifacts/eval_videos/llm_v1_final_best_model.mp4` | LLM final best model video |
 | `artifacts/eval_videos/human_v3_best_model.mp4` | Human v3 best model video |
-| `reward_functions/llm_v1_final.py` | Final LLM reward function |
+| `reward_functions/llm/llm_v1_final.py` | Final LLM reward function |
 | `reward_functions/human_heuristic.py` | Human heuristic reward function |
 | `llm_reward_loop.py` | Full LLM loop implementation |
 

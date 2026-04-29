@@ -1078,12 +1078,12 @@ Key observations:
 - Deterministic eval at x=434 for R2/R3 — greedy policy trapped by level structure; stochastic breaks past it
 - All 5 rounds were fully stateless — the guardrail fix was effective
 
-**Selected for final 5M run: R1** (`reward_functions/llm_v1_r1.py`)
+**Selected for final 5M run: R1** (`reward_functions/llm/llm_v1_r1.py`)
 Rationale: best stochastic mean, no collapse, moderate design that balances native br signal with modest shaping.
 
 ### 2026-04-28 LLM v1 final 5M run — completed and evaluated
 
-Config: `configs/llm_v1_final.json` — R1 reward function (`llm_v1_final.py`), 5M steps, n_envs=4, ent_coef=0.02, deterministic=False eval.
+Config: `configs/llm/llm_v1_final.json` — R1 reward function (`reward_functions/llm/llm_v1_final.py`), 5M steps, n_envs=4, ent_coef=0.02, deterministic=False eval.
 
 **20-episode eval on best_model.zip:**
 
@@ -1223,8 +1223,8 @@ Key observations:
 ### 2026-04-29 Final presentation tables — agreed naming and structure
 
 #### Naming convention
-- Our LLM rounds: "Stochastic LLM - Iteration N" (det=False checkpoint selection)
-- Teammate LLM: "Deterministic LLM - Iteration N" (det=True checkpoint selection)
+- Our LLM rounds: "LLM, det=False selection - Iteration N" (stochastic checkpoint selection)
+- Teammate LLM: "LLM, det=True selection - Iteration N" (deterministic checkpoint selection)
 - Human v3 stoch retrain: "Stochastic Human Heuristic"
 - Human v3 original: "Deterministic Human Heuristic"
 
@@ -1238,9 +1238,9 @@ Key observations:
 | Agent | Mean | Std | Min | Max |
 |-------|------|-----|-----|-----|
 | Baseline | 579 | 96 | 312 | 722 |
-| Deterministic LLM - Iteration 3 | 661 | 275 | 296 | 898 |
-| Stochastic LLM - Iteration 1 | 1167 | 242 | 898 | 1511 |
-| Stochastic LLM - Iteration 3 | 1110 | 365 | 312 | 2011 |
+| LLM, det=True selection - Iteration 3 | 661 | 275 | 296 | 898 |
+| LLM, det=False selection - Iteration 1 | 1167 | 242 | 898 | 1511 |
+| LLM, det=False selection - Iteration 3 | 1110 | 365 | 312 | 2011 |
 
 Note: Teammate's Iteration 3 shown (not best round v2) for direct 1M→5M comparison consistency.
 
@@ -1248,8 +1248,8 @@ Note: Teammate's Iteration 3 shown (not best round v2) for direct 1M→5M compar
 
 | Agent | Mean | Std | Min | Max | Flags |
 |-------|------|-----|-----|-----|-------|
-| Deterministic LLM | 618 | 332 | 312 | 1434 | 0/20 |
-| Stochastic LLM - Iteration 1 | 1374 | 502 | 434 | 2130 | 0/20 |
-| Stochastic LLM - Iteration 3 | 1441 | 355 | 696 | 1909 | 0/20 |
+| LLM, det=True selection | 618 | 332 | 312 | 1434 | 0/20 |
+| LLM, det=False selection - Iteration 1 | 1374 | 502 | 434 | 2130 | 0/20 |
+| LLM, det=False selection - Iteration 3 | 1441 | 355 | 696 | 1909 | 0/20 |
 | Stochastic Human Heuristic | 1934 | 422 | 898 | 2475 | 0/20 |
 | Deterministic Human Heuristic | 2044 | 594 | 1431 | 3161 | 3/20 |

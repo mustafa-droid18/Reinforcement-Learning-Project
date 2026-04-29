@@ -191,7 +191,7 @@ Rationale: best stochastic mean, no collapse, proven stable design.
 
 ### Naming Convention
 - **LLM, det=False selection**: Our LLM loop runs — stochastic checkpoint selection, n=10 eval episodes
-- **LLM, det=True selection**: Teammate LLM loop runs — deterministic checkpoint selection, n=5 eval episodes
+- **LLM, det=True selection**: deterministic checkpoint selection, n=5 eval episodes
 - **Stochastic Human Heuristic**: Human v3 stoch retrain — `det=False` checkpoint selection
 - **Deterministic Human Heuristic**: Human v3 original — `det=True` checkpoint selection
 - All task evals: 20-episode stochastic (det=False), unshaped native reward
@@ -209,7 +209,7 @@ Rationale: best stochastic mean, no collapse, proven stable design.
 | LLM, det=False selection - Iteration 1 | 1167 | 242 | 898 | 1511 |
 | LLM, det=False selection - Iteration 3 | 1110 | 365 | 312 | 2011 |
 
-Note: Teammate's Iteration 3 shown (not best round v2) for direct 1M→5M comparison consistency.
+Note: Deterministic LLM Iteration 3 shown (not best round v2) for direct 1M→5M comparison consistency.
 
 ### 5M Comparison Table
 

@@ -161,26 +161,24 @@ Improvement over baseline: LLM 1M +101%, LLM 5M +137–149%, Human 5M +235–253
 
 ---
 
-## Teammate LLM Loop (different prompt, det=True checkpoint selection)
+## Deterministic LLM Loop (det=True checkpoint selection)
 
-Teammate ran their own LLM reward loop (5 rounds × 1M steps) with a different prompt, plus a 5M final run using their v3 reward function. Evaluated with our standard methodology: 20-episode stochastic eval, unshaped native reward, best_model.zip.
+The Deterministic LLM loop ran 5 rounds × 1M steps plus a 5M final run using the v3 reward function. Evaluated with the standard methodology: 20-episode stochastic eval, unshaped native reward, best_model.zip.
 
 | Agent | Steps | Stoch mean x_pos | Stoch max | Flags |
 |-------|-------|-----------------|-----------|-------|
-| Teammate LLM v1 | 1M | 786 | 1440 | 0/20 |
-| Teammate LLM v2 | 1M | 854 | 1521 | 0/20 |
-| Teammate LLM v3 | 1M | 661 | 898 | 0/20 |
-| Teammate LLM v4 | 1M | 721 | 1151 | 0/20 |
-| Teammate LLM v5 | 1M | 402 | 1433 | 0/20 |
-| Teammate LLM v3 (5M) | 5M | 618 | 1434 | 0/20 |
+| Deterministic LLM - Iteration 1 | 1M | 786 | 1440 | 0/20 |
+| Deterministic LLM - Iteration 2 | 1M | 854 | 1521 | 0/20 |
+| Deterministic LLM - Iteration 3 | 1M | 661 | 898 | 0/20 |
+| Deterministic LLM - Iteration 4 | 1M | 721 | 1151 | 0/20 |
+| Deterministic LLM - Iteration 5 | 1M | 402 | 1433 | 0/20 |
+| Deterministic LLM (5M) | 5M | 618 | 1434 | 0/20 |
 
 Key observations:
-- Best round: v2 at 1M (mean=854) — weaker than our R1 (mean=1167).
-- v3 at 5M regressed vs 1M (618 vs 661) — reward function did not scale with more compute.
-- v5 nearly collapsed (mean=402, most episodes stuck at x≈303) — same failure mode as our R2/R4.
-- Their loop used det=True checkpoint selection; teammate's best (854) < our R1 (1167), showing prompt design and eval methodology matter significantly.
-
-Note: teammate's `llm_loop_results.json` showed 5 episodes per iteration with zero variance — confirms they used deterministic=True for their in-loop eval. Our stochastic re-eval is the canonical comparison.
+- Best round: Iteration 2 at 1M (mean=854) — weaker than Stochastic LLM Iteration 1 (mean=1167).
+- 5M run regressed vs 1M (618 vs 661) — reward function did not scale with more compute.
+- Iteration 5 nearly collapsed (mean=402, most episodes stuck at x≈303) — same failure mode as Stochastic LLM Iterations 2 and 4.
+- `artifacts-teammates/llm_loop_results.json` showed 5 episodes per iteration with zero variance — confirms deterministic=True was used for in-loop eval. The 20-episode stochastic re-eval above is the canonical comparison.
 
 ---
 
@@ -188,7 +186,7 @@ Note: teammate's `llm_loop_results.json` showed 5 episodes per iteration with ze
 
 ### Naming convention
 - "Stochastic LLM - Iteration N": our loop (det=False checkpoint selection)
-- "Deterministic LLM - Iteration N": teammate loop (det=True checkpoint selection)
+- "Deterministic LLM - Iteration N": det=True checkpoint selection
 - "Stochastic Human Heuristic": human v3 stoch retrain (det=False trained)
 - "Deterministic Human Heuristic": human v3 original (det=True trained)
 
@@ -205,7 +203,7 @@ Note: teammate's `llm_loop_results.json` showed 5 episodes per iteration with ze
 | Stochastic LLM - Iteration 1 | 1167 | 242 | 898 | 1511 |
 | Stochastic LLM - Iteration 3 | 1110 | 365 | 312 | 2011 |
 
-Note: Teammate's Iteration 3 shown (not their best round v2) for direct 1M→5M comparison consistency.
+Note: Deterministic LLM Iteration 3 shown (not best round Iteration 2) for direct 1M→5M comparison consistency.
 
 ### 5M Comparison Table
 

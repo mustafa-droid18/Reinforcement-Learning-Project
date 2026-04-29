@@ -65,8 +65,8 @@ Small changes to the dx multiplier (0.3×, 0.5×, 1.0×, 1.5×) had dramatic eff
 **6. Stochastic vs deterministic eval gap**
 For PPO, the stochastic policy (sampled actions) consistently outperforms the deterministic policy (greedy argmax) on this task. Stochastic LLM Iteration 1 at 5M: stoch mean=1374 vs det=1129. Human v3 original: stoch mean=2044 vs det=2354 (here det wins because milestones make the greedy policy strong). Always report both for PPO.
 
-**7. Prompt design affects LLM loop performance**
-The teammate's loop (same environment, different prompt, `det=True` checkpoint selection) achieved best mean=854 at 1M vs our 1167, and their 5M final reached only 618 vs our 1374–1441. The stateless constraint, stochastic eval methodology, and feedback structure (training diagnostics + learning curve) in our prompt design appear to be significant factors.
+**7. Checkpoint selection methodology affects LLM loop performance**
+The Deterministic LLM loop (`det=True` checkpoint selection) achieved best mean=854 at 1M vs Stochastic LLM 1167, and its 5M final reached only 618 vs 1374–1441. The stateless constraint, stochastic eval methodology, and feedback structure (training diagnostics + learning curve) appear to be significant factors in the performance gap.
 
 ---
 

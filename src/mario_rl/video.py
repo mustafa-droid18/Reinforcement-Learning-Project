@@ -1,3 +1,15 @@
+"""Video recording utilities for trained Mario PPO agents.
+
+Provides a VideoRecorderCallback for recording checkpoint videos during
+training, and a standalone entrypoint for recording a saved model after
+training.
+
+Usage:
+    PYTHONPATH=src python -m mario_rl.video \
+        --config configs/llm/llm_v1_final.json \
+        --model artifacts/llm_v1_final_seed0/models/best_model.zip \
+        --output artifacts/eval_videos/llm_v1_final_best_model.mp4
+"""
 from __future__ import annotations
 
 import argparse

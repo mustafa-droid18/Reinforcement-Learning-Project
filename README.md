@@ -1,4 +1,4 @@
-# Mario RL Reward Shaping
+# LLM-Driven Reward Shaping on Super Mario Bros
 
 This project trains a PPO agent to play **Super Mario Bros World 1-1** and compares three reward-design strategies:
 
